@@ -3,7 +3,7 @@
 function Task(description, priority = 'medium') {
     this.id = Date.now() + Math.random();  // Unique ID
     this.description = description;
-    this.priority = priority;               // 'low', 'medium', 'high'
+    this.priority = priority;               
     this.completed = false;
     this.createdAt = new Date();
 }
