@@ -1,4 +1,3 @@
-// js/todo.js
 
 // Constructor for a single Task
 function Task(description, priority = 'medium') {
