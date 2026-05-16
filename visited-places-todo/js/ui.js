@@ -1,88 +1,71 @@
-// js/ui.js
+// Make a new to-do list
+let myList = new ToDoList();
 
-// Create a ToDoList instance
-const todoList = new ToDoList();
+// Get the HTML elements
+let form = document.getElementById("task-form");
+let input = document.getElementById("task-input");
+let list = document.getElementById("task-list");
 
-// DOM Elements
-const taskForm = document.getElementById('task-form');
-const taskInput = document.getElementById('task-input');
-const prioritySelect = document.getElementById('priority-select');
-const taskList = document.getElementById('task-list');
-const filterButtons = document.querySelectorAll('.filter-btn');
-const statsDisplay = document.getElementById('stats');
-
-let currentFilter = 'all';
-
-// Render tasks to the page
-function renderTasks() {
-    const tasks = todoList.getTasks(currentFilter);
-    taskList.innerHTML = '';
-
-    if (tasks.length === 0) {
-        taskList.innerHTML = '<li class="empty">No tasks yet. Add one above!</li>';
-        return;
-    }
-
-    tasks.forEach(task => {
-        const li = document.createElement('li');
-        li.className = `task-item ${task.completed ? 'completed' : ''} priority-${task.priority}`;
-        li.innerHTML = `
-            <span class="task-text" onclick="toggleTask(${task.id})">
-                ${task.getDisplayText()}
-            </span>
-            <button class="delete-btn" onclick="deleteTask(${task.id})">×</button>
-        `;
-        taskList.appendChild(li);
-    });
-
-    updateStats();
-}
-
-// Add new task
-taskForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const description = taskInput.value.trim();
-    const priority = prioritySelect.value;
-
-    if (description) {
-        todoList.addTask(description, priority);
-        taskInput.value = '';
-        renderTasks();
+// When user submits the form
+form.addEventListener("submit", function(event) {
+    event.preventDefault(); // Stop page from reloading
+    
+    let text = input.value;
+    
+    if (text !== "") {
+        myList.addTask(text); // Add to business logic
+        input.value = ""; // Clear the box
+        showTasks(); // Update the screen
     }
 });
 
-// Toggle task completion
-function toggleTask(taskId) {
-    todoList.toggleTask(taskId);
-    renderTasks();
+// Show all tasks on the screen
+function showTasks() {
+    list.innerHTML = ""; // Clear the list first
+    
+    for (let i = 0; i < myList.tasks.length; i++) {
+        let task = myList.tasks[i];
+        
+        // Make a list item
+        let li = document.createElement("li");
+        
+        // Checkbox for completing
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = task.completed;
+        
+        // When checkbox is clicked
+        checkbox.addEventListener("click", (function(index) {
+            return function() {
+                myList.tasks[index].toggle();
+                showTasks();
+            };
+        })(i));
+        
+        // Task text
+        let span = document.createElement("span");
+        span.textContent = " " + task.description;
+        
+        if (task.completed === true) {
+            span.style.textDecoration = "line-through";
+            span.style.color = "gray";
+        }
+        
+        // Delete button
+        let deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        
+        deleteBtn.addEventListener("click", (function(index) {
+            return function() {
+                myList.removeTask(index);
+                showTasks();
+            };
+        })(i));
+        
+        // Put everything together
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+    }
 }
-
-// Delete task
-function deleteTask(taskId) {
-    todoList.removeTask(taskId);
-    renderTasks();
-}
-
-// Filter tasks
-filterButtons.forEach(btn => {
-    btn.addEventListener('click', function() {
-        currentFilter = this.dataset.filter;
-        filterButtons.forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        renderTasks();
-    });
-});
-
-// Update stats display
-function updateStats() {
-    const stats = todoList.getStats();
-    statsDisplay.innerHTML = `
-        <span>Total: ${stats.total}</span>
-        <span>Active: ${stats.active}</span>
-        <span>Completed: ${stats.completed}</span>
-        <span>${stats.percentComplete}% Done</span>
-    `;
-}
-
-// Initial render
-renderTasks();
