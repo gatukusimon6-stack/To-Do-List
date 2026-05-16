@@ -1,4 +1,4 @@
-# Week {05}: {DOM Manipulation}
+# TO-Do List
 
 ## Author
 - **Name:** Simon Gatuku
