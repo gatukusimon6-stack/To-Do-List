@@ -1,17 +1,5 @@
 
-// Constructor for a single Task
-function Task(description, priority = 'medium') {
-    this.id = Date.now() + Math.random();  // Unique ID
-    this.description = description;
-    this.priority = priority;               
-    this.completed = false;
-    this.createdAt = new Date();
-}
 
-// Prototype: Toggle completion status
-Task.prototype.toggleComplete = function() {
-    this.completed = !this.completed;
-    return this.completed;
 };
 
 // Prototype: Get display text
